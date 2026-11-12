@@ -24,7 +24,7 @@ abstract class IntegrationTestCase extends TestCase
         $config = [
             'driver' => 'pgsql',
             'host' => env('INTEGRATION_DB_HOST', '127.0.0.1'),
-            'port' => env('INTEGRATION_DB_PORT', '5433'),
+            'port' => env('INTEGRATION_DB_PORT', '5432'),
             'database' => env('INTEGRATION_DB_DATABASE', 'template_app_test'),
             'username' => env('INTEGRATION_DB_USERNAME', 'template_app'),
             'password' => env('INTEGRATION_DB_PASSWORD', 'template_app'),
@@ -36,6 +36,11 @@ abstract class IntegrationTestCase extends TestCase
         try {
             new PDO("pgsql:host={$config['host']};port={$config['port']};dbname={$config['database']}", $config['username'], $config['password']);
         } catch (Throwable $e) {
+            // En CI, INTEGRATION_DB_REQUIRED=true : une base absente doit faire échouer, pas ignorer.
+            if (filter_var(env('INTEGRATION_DB_REQUIRED', false), FILTER_VALIDATE_BOOL)) {
+                throw $e;
+            }
+
             $this->markTestSkipped("Base d'intégration injoignable : {$e->getMessage()}");
         }
 

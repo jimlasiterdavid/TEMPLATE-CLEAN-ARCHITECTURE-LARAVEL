@@ -5,7 +5,7 @@ namespace App\Api\Responses;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Format de réponse unique pour les fronts Angular et Flutter.
+ * Format de réponse unique de l'API, quel que soit le client (web, mobile…).
  *
  * Succès : { "success": true,  "message": "...", "data": ... }
  * Erreur : { "success": false, "message": "...", "errors": { ... } }

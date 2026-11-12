@@ -4,7 +4,6 @@ namespace App\Api\Exceptions;
 
 use App\Domain\Shared\Errors\BusinessRuleViolation;
 use App\Domain\Shared\Errors\NotFoundError;
-use App\Infrastructure\Database\StoredProcedure\StoredProcedureException;
 use App\Api\Responses\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -40,7 +39,6 @@ final class ApiExceptionRenderer
             $e instanceof AuthenticationException => ApiResponse::error('Non authentifié.', 401),
             $e instanceof NotFoundHttpException => ApiResponse::error('Ressource introuvable.', 404),
             $e instanceof HttpExceptionInterface => ApiResponse::error($e->getMessage() ?: 'Erreur HTTP.', $e->getStatusCode()),
-            $e instanceof StoredProcedureException => ApiResponse::error(self::debugOr($e, 'Erreur lors du traitement de la requête.'), 500),
             default => ApiResponse::error(self::debugOr($e, 'Erreur interne du serveur.'), 500),
         };
     }

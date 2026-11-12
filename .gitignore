@@ -27,3 +27,9 @@ Homestead.yaml
 Thumbs.db
 
 /storage/api-docs
+
+# @feature template
+# Dépôt du template : chaque projet généré résout les dernières versions et commit son propre lock.
+/composer.lock
+/package-lock.json
+# @endfeature

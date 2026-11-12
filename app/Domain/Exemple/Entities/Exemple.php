@@ -6,7 +6,7 @@ use App\Domain\Shared\Errors\BusinessRuleViolation;
 use App\Domain\Shared\ValueObjects\Montant;
 
 /**
- * Entité modèle : à dupliquer pour chaque objet métier exposé par les procédures.
+ * Entité modèle : à dupliquer pour chaque objet métier.
  */
 final class Exemple
 {

@@ -2,19 +2,18 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "jimlasiterdavid/template-clean-architecture-laravel",
     "type": "project",
-    "description": "API REST TemplateApp (Laravel) en clean architecture, adossée à des procédures stockées PostgreSQL, consommée par les fronts Angular et Flutter.",
+    "description": "Template Laravel en clean architecture : API REST + Swagger et/ou interface Livewire, Inertia Vue ou React ; données via Eloquent ou procédures stockées.",
     "keywords": [
         "laravel",
         "clean-architecture",
         "template",
-        "postgresql",
-        "stored-procedures",
+        "livewire",
+        "inertia",
         "swagger"
     ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "darkaonline/l5-swagger": "^11.2",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0"
     },
@@ -61,8 +60,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php bin/init.php",
-            "@php artisan key:generate --ansi"
+            "@php bin/init.php"
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
@@ -82,6 +80,10 @@
         "test:api": [
             "@php artisan config:clear --ansi",
             "@php artisan test --testsuite=Api"
+        ],
+        "test:web": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test --testsuite=Web"
         ],
         "test:integration": [
             "@php artisan config:clear --ansi",

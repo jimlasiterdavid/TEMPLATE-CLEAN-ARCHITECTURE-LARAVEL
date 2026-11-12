@@ -6,7 +6,7 @@ use App\Domain\Exemple\Entities\Exemple;
 use App\Domain\Shared\ValueObjects\Montant;
 
 /**
- * Port du domaine : l'implémentation (procédures stockées) vit dans Infrastructure.
+ * Port du domaine : l'implémentation (Eloquent, procédures stockées…) vit dans Infrastructure.
  */
 interface ExempleRepository
 {

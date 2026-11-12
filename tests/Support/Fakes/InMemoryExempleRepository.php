@@ -7,8 +7,8 @@ use App\Domain\Exemple\Repositories\ExempleRepository;
 use App\Domain\Shared\ValueObjects\Montant;
 
 /**
- * Repository en mémoire : remplace les procédures stockées dans les tests
- * Application et Feature.
+ * Repository en mémoire : remplace le stockage réel dans les tests
+ * Application, Feature, Api et Web.
  */
 final class InMemoryExempleRepository implements ExempleRepository
 {

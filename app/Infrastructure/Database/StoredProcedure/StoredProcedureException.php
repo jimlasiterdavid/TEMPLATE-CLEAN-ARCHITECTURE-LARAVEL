@@ -8,7 +8,7 @@ use RuntimeException;
 /**
  * Erreur levée lors de l'exécution d'une procédure stockée.
  *
- * Sont considérées comme erreurs « métier » (message renvoyé au front, HTTP 422) :
+ * Sont considérées comme erreurs « métier » (message renvoyé à l'utilisateur, HTTP 422) :
  *  - PostgreSQL    : RAISE EXCEPTION '...'  (SQLSTATE P0001, valeur par défaut)
  *  - MySQL/MariaDB : SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '...'
  *  - SQL Server    : THROW 50001, '...', 1  (numéro d'erreur >= 50000)
@@ -42,7 +42,7 @@ class StoredProcedureException extends RuntimeException
 
     /**
      * PostgreSQL renvoie « ERROR:  message\nCONTEXT:  PL/pgSQL function … » :
-     * on ne garde que le message destiné au front.
+     * on ne garde que le message destiné à l'utilisateur.
      */
     private static function cleanMessage(string $message): string
     {

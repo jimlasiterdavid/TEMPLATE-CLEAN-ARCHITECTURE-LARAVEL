@@ -4,7 +4,6 @@ namespace Tests\Unit\Api;
 
 use App\Domain\Shared\Errors\BusinessRuleViolation;
 use App\Domain\Shared\Errors\NotFoundError;
-use App\Infrastructure\Database\StoredProcedure\StoredProcedureException;
 use App\Api\Exceptions\ApiExceptionRenderer;
 use RuntimeException;
 use Tests\TestCase;
@@ -31,10 +30,10 @@ class ApiExceptionRendererTest extends TestCase
     {
         config(['app.debug' => false]);
 
-        $response = ApiExceptionRenderer::toResponse(new StoredProcedureException('ps_x', '42000', 1305, 'PROCEDURE ps_x does not exist'));
+        $response = ApiExceptionRenderer::toResponse(new RuntimeException('SQLSTATE[42P01]: table absente'));
 
         $this->assertSame(500, $response->getStatusCode());
-        $this->assertSame('Erreur lors du traitement de la requête.', $response->getData(true)['message']);
+        $this->assertSame('Erreur interne du serveur.', $response->getData(true)['message']);
     }
 
     public function test_erreur_technique_detaillee_en_debug(): void

@@ -1,0 +1,81 @@
+# Vérifie que le template génère des projets fonctionnels, avec les DERNIÈRES versions
+# des paquets (Laravel, Livewire, Inertia, Swagger, Vite, Tailwind, Vue, React…).
+# Tourne à chaque push / PR et chaque semaine : une nouvelle version qui casse le
+# template est détectée ici, pas lors de la création d'un projet.
+# (Ce fichier est supprimé des projets générés.)
+name: Template
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  generate:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: API + Eloquent + SQLite
+            args: --ui=none --api --data=eloquent --db=sqlite
+          - name: API + procédures stockées PostgreSQL
+            args: --ui=none --api --data=procedures
+          - name: Livewire + Eloquent + MySQL
+            args: --ui=livewire --no-api --data=eloquent --db=mysql
+          - name: Livewire + API (hybride) + SQLite
+            args: --ui=livewire --api --data=eloquent --db=sqlite
+          - name: Inertia Vue + API + PostgreSQL
+            args: --ui=vue --api --data=eloquent --db=pgsql
+          - name: Inertia React + procédures stockées
+            args: --ui=react --no-api --data=procedures
+          - name: Cœur seul (ni interface ni API) + MariaDB
+            args: --ui=none --no-api --data=eloquent --db=mariadb
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ci_app
+          POSTGRES_PASSWORD: ci_app
+          POSTGRES_DB: ci_app_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pdo_sqlite
+          coverage: none
+          tools: composer
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Générer le projet
+        run: ./bin/create-project.sh ci-app "$RUNNER_TEMP" ${{ matrix.args }} --no-git -n
+
+      - name: Aucun marqueur de template ne doit subsister
+        working-directory: ${{ runner.temp }}/ci-app
+        run: |
+          ! grep -rnE '@(end)?feature|TemplateApp|template_app|template-app' \
+            --exclude-dir=vendor --exclude-dir=node_modules --exclude-dir=storage .
+
+      - name: Tests du projet généré
+        working-directory: ${{ runner.temp }}/ci-app
+        env:
+          INTEGRATION_DB_REQUIRED: 'true'
+        run: php artisan test

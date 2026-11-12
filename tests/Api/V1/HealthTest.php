@@ -21,7 +21,7 @@ class HealthTest extends TestCase
             ->assertExactJson(['success' => false, 'message' => 'Ressource introuvable.']);
     }
 
-    public function test_cors_autorise_le_front_angular(): void
+    public function test_cors_autorise_les_origines_configurees(): void
     {
         $this->withHeaders([
             'Origin' => 'http://localhost:4200',

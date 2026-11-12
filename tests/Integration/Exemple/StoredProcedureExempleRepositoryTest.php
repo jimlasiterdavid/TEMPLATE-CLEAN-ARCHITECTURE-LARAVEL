@@ -37,6 +37,7 @@ class StoredProcedureExempleRepositoryTest extends IntegrationTestCase
         $this->assertNull($this->repo->trouver(99999));
         $this->assertSame(['C'], array_map(fn ($e) => $e->libelle, $this->repo->lister(2, 2)));
     }
+    // @feature api
 
     public function test_bout_en_bout_http_vers_procedures(): void
     {
@@ -48,4 +49,5 @@ class StoredProcedureExempleRepositoryTest extends IntegrationTestCase
             ->assertStatus(422)
             ->assertExactJson(['success' => false, 'message' => 'Ce libellé existe déjà.']);
     }
+    // @endfeature
 }

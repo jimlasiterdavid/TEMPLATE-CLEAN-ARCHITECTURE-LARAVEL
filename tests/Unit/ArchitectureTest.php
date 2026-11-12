@@ -9,7 +9,7 @@ use RecursiveIteratorIterator;
 
 /**
  * Garde-fou de la clean architecture : les dépendances pointent vers l'intérieur.
- * Domain ← Application ← Infrastructure / Api
+ * Domain ← Application ← Infrastructure / Api / Web
  */
 class ArchitectureTest extends TestCase
 {
@@ -36,15 +36,21 @@ class ArchitectureTest extends TestCase
     public static function regles(): array
     {
         return [
-            'Domain est indépendant' => ['Domain', ['Illuminate\\', 'App\\Application\\', 'App\\Infrastructure\\', 'App\\Api\\']],
-            'Application ne dépend que du Domain' => ['Application', ['Illuminate\\', 'App\\Infrastructure\\', 'App\\Api\\']],
-            'Infrastructure ignore la couche Api' => ['Infrastructure', ['App\\Api\\']],
+            'Domain est indépendant' => ['Domain', ['Illuminate\\', 'App\\Application\\', 'App\\Infrastructure\\', 'App\\Api\\', 'App\\Web\\']],
+            'Application ne dépend que du Domain' => ['Application', ['Illuminate\\', 'App\\Infrastructure\\', 'App\\Api\\', 'App\\Web\\']],
+            'Infrastructure ignore les couches de présentation' => ['Infrastructure', ['App\\Api\\', 'App\\Web\\']],
+            'Api ignore Infrastructure et Web' => ['Api', ['App\\Infrastructure\\', 'App\\Web\\']],
+            'Web ignore Infrastructure et Api' => ['Web', ['App\\Infrastructure\\', 'App\\Api\\']],
         ];
     }
 
     /** @return list<string> */
     private function fichiers(string $dossier): array
     {
+        if (! is_dir($dossier)) {
+            return [];
+        }
+
         $fichiers = [];
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dossier)) as $f) {
             if ($f->isFile() && $f->getExtension() === 'php') {

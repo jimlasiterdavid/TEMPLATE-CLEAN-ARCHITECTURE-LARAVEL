@@ -11,7 +11,7 @@ use OpenApi\Attributes as OA;
 #[OA\Info(
     version: '1.0.0',
     title: 'TemplateApp API',
-    description: 'API REST TemplateApp adossée à des procédures stockées PostgreSQL, consommée par les fronts Angular et Flutter.',
+    description: 'API REST TemplateApp.',
     contact: new OA\Contact(name: 'TemplateApp'),
 )]
 #[OA\Server(url: L5_SWAGGER_CONST_HOST.'/api/v1', description: 'API v1')]

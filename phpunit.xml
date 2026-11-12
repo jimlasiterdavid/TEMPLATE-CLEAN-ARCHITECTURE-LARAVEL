@@ -11,12 +11,19 @@
         <testsuite name="Application">
             <directory>tests/Application</directory>
         </testsuite>
+        <!-- @feature api -->
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
         <testsuite name="Api">
             <directory>tests/Api</directory>
         </testsuite>
+        <!-- @endfeature -->
+        <!-- @feature ui -->
+        <testsuite name="Web">
+            <directory>tests/Web</directory>
+        </testsuite>
+        <!-- @endfeature -->
         <testsuite name="Integration">
             <directory>tests/Integration</directory>
         </testsuite>
@@ -41,12 +48,16 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- @feature api -->
         <env name="CORS_ALLOWED_ORIGINS" value="http://localhost:4200"/>
-        <!-- Base PostgreSQL réelle pour tests/Integration -->
+        <!-- @endfeature -->
+        <!-- @feature data:procedures -->
+        <!-- Base PostgreSQL réelle pour tests/Integration (procédures stockées) -->
         <env name="INTEGRATION_DB_HOST" value="127.0.0.1"/>
-        <env name="INTEGRATION_DB_PORT" value="5433"/>
+        <env name="INTEGRATION_DB_PORT" value="5432"/>
         <env name="INTEGRATION_DB_DATABASE" value="template_app_test"/>
         <env name="INTEGRATION_DB_USERNAME" value="template_app"/>
         <env name="INTEGRATION_DB_PASSWORD" value="template_app"/>
+        <!-- @endfeature -->
     </php>
 </phpunit>

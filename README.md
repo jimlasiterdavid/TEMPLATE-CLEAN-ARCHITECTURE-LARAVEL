@@ -1,99 +1,182 @@
 # TemplateApp
 
-API REST TemplateApp (Laravel 13, PHP 8.5) consommée par les fronts **Angular** et **Flutter**.
-Toute la logique de données passe par des **procédures stockées PostgreSQL** : pas de migrations ni de modèles Eloquent.
+Application Laravel en **clean architecture**.
 
 Auteur : {{AUTHOR}}
 
 <!-- template:start -->
-## Créer un nouveau projet depuis ce template
+## Template clean architecture Laravel
 
-> Cette section disparaît automatiquement des projets générés.
+Générateur de projets Laravel en clean architecture. À la création, on choisit :
 
-Le nom peut s'écrire `mon-projet`, `mon_projet`, `MonProjet` ou `"Mon Projet"`. Il est décliné automatiquement :
+- **Interface web**
+  - aucune : API seule ou front séparé (Angular, Flutter, React, Vue…) ;
+  - Livewire ;
+  - Inertia + Vue ;
+  - Inertia + React.
+- **API REST + Swagger** : oui ou non. Avec une interface, on obtient le mode hybride, par exemple une app web et une API pour une app mobile.
+- **Accès aux données** : Eloquent (migrations + modèles) ou procédures stockées PostgreSQL.
+- **Base de données** : PostgreSQL, MySQL, MariaDB ou SQLite. Les procédures stockées imposent PostgreSQL.
 
-| Usage | Exemple |
-|---|---|
-| `APP_NAME`, titre Swagger, README | `MonProjet` |
-| Base / rôle PostgreSQL (`.env`, `phpunit.xml`) | `mon_projet`, `mon_projet_test` |
-| Dossier et paquet composer | `mon-projet`, `vendor/mon-projet` |
+Le Domain et les cas d'usage sont identiques dans tous les cas. Seuls les adaptateurs changent : contrôleurs API, composants Livewire ou pages Inertia d'un côté ; repository Eloquent ou procédures stockées de l'autre.
 
-### Option 1 — une seule commande (recommandée)
+**Aucune version n'est figée** : les paquets propres à chaque option sont installés à la création, dans leur dernière version compatible. Le projet généré reçoit son propre `composer.lock` et son propre `package-lock.json`.
+
+### Créer un projet
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jimlasiterdavid/TEMPLATE-CLEAN-ARCHITECTURE-LARAVEL/main/bin/create-project.sh | bash -s -- mon-projet
 ```
 
-Clone le template, renomme tout, `composer install`, génère `APP_KEY`, puis `git init` avec un premier commit.
-Options : `--vendor=acme`, `--author="Nom"`, `--email=…`, `--no-install`, `--no-git`, dossier parent en 2ᵉ argument.
-Dépôt privé : `curl … | TEMPLATE_REPO=git@github.com:jimlasiterdavid/TEMPLATE-CLEAN-ARCHITECTURE-LARAVEL.git bash -s -- mon-projet`
-(ou téléchargez le script avec `gh` / un token).
-
-Depuis un clone local du template :
+Les choix sont demandés de façon interactive. On peut aussi tout passer en une ligne :
 
 ```bash
-./bin/create-project.sh mon-projet ~/projets
+… | bash -s -- mon-projet --ui=livewire --api --data=eloquent --db=mysql
+… | bash -s -- mon-projet --ui=none --api --data=procedures          # API sur procédures stockées
+… | bash -s -- mon-projet --ui=react --no-api --db=sqlite            # app React, démarrage immédiat
 ```
 
-### Option 2 — Composer
+| Option | Valeurs | Défaut |
+|---|---|---|
+| `--ui` | `none`, `livewire`, `vue`, `react` | `none` |
+| `--api` / `--no-api` | | oui |
+| `--data` | `eloquent`, `procedures` | `eloquent` |
+| `--db` | `pgsql`, `mysql`, `mariadb`, `sqlite` | `pgsql` |
+| `--vendor`, `--author`, `--email` | métadonnées de `composer.json` | nom du projet, `git config` |
+| `--no-install`, `--no-git`, `-n` (aucune question) | | |
 
-```bash
-composer create-project jimlasiterdavid/template-clean-architecture-laravel mon-projet \
-  --repository='{"type":"vcs","url":"https://github.com/jimlasiterdavid/TEMPLATE-CLEAN-ARCHITECTURE-LARAVEL"}' \
-  --stability=dev
-```
+Le nom peut s'écrire `mon-projet`, `MonProjet` ou `"Mon Projet"`. Il est décliné en `MonProjet` (`APP_NAME`, titre Swagger), `mon_projet` (base de données) et `mon-projet` (dossier, paquet composer).
 
-(Sans `--repository` ni `--stability` si le paquet est publié sur Packagist avec un tag.) Le nom est déduit du dossier.
+Prérequis : PHP ≥ 8.3, Composer, git. Node.js/npm en plus si une interface web est choisie.
 
-### Option 3 — bouton GitHub « Use this template »
+### Autres façons de créer un projet
 
-Activer *Settings → Template repository* sur le dépôt, puis dans le clone du nouveau dépôt :
+- **Depuis un clone du template :** `./bin/create-project.sh mon-projet ~/projets --ui=vue`.
+- **Bouton GitHub « Use this template » :** dans le clone du nouveau dépôt, lancer `php bin/init.php`.
+- **Composer :**
+  ```bash
+  composer create-project jimlasiterdavid/template-clean-architecture-laravel mon-projet \
+    --repository='{"type":"vcs","url":"https://github.com/jimlasiterdavid/TEMPLATE-CLEAN-ARCHITECTURE-LARAVEL"}' --stability=dev
+  ```
 
-```bash
-php bin/init.php            # ou : php bin/init.php mon-projet --vendor=acme
-composer setup
-git add -A && git commit -m "Initialisation"
-```
+### Faire évoluer le template
 
-### Ce que fait `bin/init.php`
-
-Remplace les marqueurs `TemplateApp` / `template_app` / `template-app` dans tout le projet,
-met à jour `composer.json` (nom, auteur depuis `git config`), crée `.env`, puis supprime
-`bin/`, `.template` et cette section. Il ne s'exécute qu'une fois.
-
-Pour faire évoluer le template, travaillez directement dans ce dépôt en gardant ces marqueurs
-(n'exécutez pas `bin/init.php` ici : il refuse de tourner dans le dossier `template-clean-architecture-laravel`).
+- Le générateur est `bin/init.php`. Les options sont décrites dans ses tableaux `UIS`, `DATA` et `DBS`. Les fichiers propres à une option sont déclarés dans `PATH_FEATURES` et supprimés si l'option n'est pas retenue.
+- Dans les fichiers partagés, les lignes conditionnelles sont entourées de marqueurs placés dans un commentaire : `// @feature ui:vue | ui:react` … `// @endfeature`. Les expressions acceptent `&`, `|` et `!`.
+- Les marqueurs `TemplateApp`, `template_app` et `template-app` sont remplacés par le nom du projet.
+- Ce dépôt n'est pas une application exécutable telle quelle. Pour tester une combinaison :
+  ```bash
+  ./bin/create-project.sh essai /tmp --ui=livewire --api --no-git && (cd /tmp/essai && php artisan test)
+  ```
+- La CI GitHub (`.github/workflows/template.yml`) génère plusieurs combinaisons et lance leurs tests, avec un vrai PostgreSQL pour les procédures stockées. Elle tourne à chaque push et **chaque semaine**, pour détecter au plus tôt une nouvelle version de Laravel, Livewire, Inertia, Vite… qui casserait le template.
 <!-- template:end -->
 
+## Stack
+
+- Laravel, PHP ≥ 8.3
+<!-- @feature api -->
+- API REST versionnée (`/api/v1`) documentée avec Swagger (OpenAPI)
+<!-- @endfeature -->
+<!-- @feature ui:livewire -->
+- Interface web **Livewire** + Tailwind CSS (Vite)
+<!-- @endfeature -->
+<!-- @feature ui:vue -->
+- Interface web **Inertia + Vue** + Tailwind CSS (Vite)
+<!-- @endfeature -->
+<!-- @feature ui:react -->
+- Interface web **Inertia + React** + Tailwind CSS (Vite)
+<!-- @endfeature -->
+<!-- @feature data:eloquent -->
+- Données via **Eloquent** (migrations + modèles)
+<!-- @endfeature -->
+<!-- @feature data:procedures -->
+- Données via **procédures stockées PostgreSQL** (pas de migrations ni de modèles Eloquent)
+<!-- @endfeature -->
+<!-- @feature db:pgsql -->
+- Base PostgreSQL
+<!-- @endfeature -->
+<!-- @feature db:mysql -->
+- Base MySQL
+<!-- @endfeature -->
+<!-- @feature db:mariadb -->
+- Base MariaDB
+<!-- @endfeature -->
+<!-- @feature db:sqlite -->
+- Base SQLite (`database/database.sqlite`)
+<!-- @endfeature -->
+
+## Démarrage
+
+```bash
+composer setup        # dépendances, .env, clé d'application…
+```
+
+<!-- @feature !db:sqlite -->
+Configurer ensuite la connexion `DB_*` dans `.env`.
+<!-- @endfeature -->
+<!-- @feature data:eloquent & !db:sqlite -->
+Créer la base, puis lancer `php artisan migrate`.
+<!-- @endfeature -->
+
+```bash
+composer dev          # serveur + processus de développement (http://localhost:8000)
+php artisan test      # tous les tests
+```
+
+<!-- @feature ui -->
+Les assets front sont compilés par Vite : `npm run dev` en développement (rechargement à chaud), `npm run build` pour la production.
+<!-- @endfeature -->
 
 ## Architecture (clean architecture)
 
-Les dépendances pointent toujours vers l'intérieur : `Api` / `Infrastructure` → `Application` → `Domain`
-(vérifié automatiquement par `tests/Unit/ArchitectureTest.php`).
+Les dépendances pointent toujours vers l'intérieur. Les couches de présentation et l'infrastructure dépendent de `Application`, qui dépend de `Domain`. C'est vérifié automatiquement par `tests/Unit/ArchitectureTest.php`.
 
 ```
 app/
-├── Domain/                      Cœur métier, PHP pur (aucune dépendance Laravel)
-│   ├── Shared/Errors/           DomainError, BusinessRuleViolation (422), NotFoundError (404)
-│   ├── Shared/ValueObjects/     Montant…
-│   └── Exemple/                 Entities/ + Repositories/ (interfaces = ports)
-├── Application/                 Cas d'usage (un par action) + DTO d'entrée
-│   └── Exemple/UseCases/        ListerExemplesUseCase, ObtenirExempleUseCase, CreerExempleUseCase
-├── Infrastructure/              Adaptateurs techniques
+├── Domain/                     Cœur métier, PHP pur (aucune dépendance Laravel)
+│   ├── Shared/Errors/          DomainError, BusinessRuleViolation, NotFoundError
+│   ├── Shared/ValueObjects/    Montant…
+│   └── Exemple/                Entities/ + Repositories/ (interfaces = ports)
+├── Application/                Cas d'usage (un par action) + DTO d'entrée
+│   └── Exemple/UseCases/       ListerExemplesUseCase, ObtenirExempleUseCase, CreerExempleUseCase
+├── Infrastructure/             Adaptateurs techniques (implémentent les ports du domaine)
+<!-- @feature data:eloquent -->
+│   └── Exemple/                Models/ExempleModel + Repositories/EloquentExempleRepository
+<!-- @endfeature -->
+<!-- @feature data:procedures -->
 │   ├── Database/StoredProcedure/  ProcedureExecutor (port) + PdoProcedureExecutor, ProcedureCallBuilder
-│   └── Exemple/Repositories/    StoredProcedureExempleRepository (appelle les procédures, mappe en entités)
-├── Api/                         Couche d'exposition HTTP
-│   ├── Controllers/V1/          Contrôleurs fins : FormRequest → cas d'usage → ApiResponse
-│   ├── Requests/                Validation des entrées
-│   ├── Responses/ApiResponse    Format JSON unique
-│   ├── Exceptions/              ApiExceptionRenderer : toute exception → JSON
-│   └── OpenApi/                 Définition Swagger globale
+│   └── Exemple/Repositories/   StoredProcedureExempleRepository
+<!-- @endfeature -->
+<!-- @feature api -->
+├── Api/                        Présentation HTTP JSON
+│   ├── Controllers/V1/         Contrôleurs fins : FormRequest → cas d'usage → ApiResponse
+│   ├── Requests/               Validation des entrées
+│   ├── Responses/ApiResponse   Format JSON unique
+│   ├── Exceptions/             ApiExceptionRenderer : toute exception → JSON
+│   └── OpenApi/                Définition Swagger globale
+<!-- @endfeature -->
+<!-- @feature ui:livewire -->
+├── Web/                        Présentation web (Livewire)
+│   ├── Livewire/Exemples/      Composants : valider → cas d'usage → vue Blade
+│   └── Exceptions/             WebExceptionRenderer : erreurs du domaine → formulaire / 404
+<!-- @endfeature -->
+<!-- @feature ui:inertia -->
+├── Web/                        Présentation web (Inertia)
+│   ├── Controllers/            Contrôleurs fins : FormRequest → cas d'usage → Inertia::render
+│   ├── Requests/               Validation des entrées
+│   ├── Middleware/             HandleInertiaRequests (données partagées, messages flash)
+│   └── Exceptions/             WebExceptionRenderer : erreurs du domaine → formulaire / 404
+<!-- @endfeature -->
 └── Providers/CleanArchitectureServiceProvider   Liaison interfaces → implémentations
 ```
 
 Le module **Exemple** est un modèle complet à dupliquer pour chaque ressource.
+Pour changer de stockage, il suffit d'écrire un autre repository qui implémente l'interface du domaine et de le lier dans `CleanArchitectureServiceProvider`. Les cas d'usage et la présentation ne changent pas.
 
-## Format des réponses
+<!-- @feature api -->
+## API REST
+
+### Format des réponses
 
 ```json
 { "success": true,  "message": "OK", "data": { } }
@@ -101,74 +184,106 @@ Le module **Exemple** est un modèle complet à dupliquer pour chaque ressource.
 { "success": false, "message": "Les données envoyées sont invalides.", "errors": { "montant": ["…"] } }
 ```
 
-| Situation | HTTP |
-|---|---|
-| Succès / création | 200 / 201 |
-| Validation Laravel | 422 + `errors` |
-| Erreur métier levée par la procédure (`RAISE EXCEPTION '…'`) | 422, message renvoyé tel quel au front |
-| Ressource introuvable | 404 |
-| Erreur technique (fonction absente, SQL…) | 500, détail masqué si `APP_DEBUG=false` |
+- Succès / création → 200 / 201.
+- Validation Laravel → 422 + `errors`.
+- Erreur métier (`BusinessRuleViolation`) → 422, avec le message renvoyé tel quel.
+- Ressource introuvable → 404.
+- Erreur technique → 500, détail masqué si `APP_DEBUG=false`.
 
-## Procédures stockées PostgreSQL
+### Documentation Swagger
 
-Les procédures qui retournent des données sont des **fonctions** (`RETURNS TABLE` / `SETOF`),
-appelées par `SELECT * FROM ma_fonction(...)`.
+- Swagger UI : <http://localhost:8000/documentation>
+- Spécification OpenAPI JSON : <http://localhost:8000/docs>, à importer côté client pour générer les appels.
+- Elle est générée depuis les attributs `#[OA\...]` de `app/Api`. En local, elle se régénère à chaque visite (`L5_SWAGGER_GENERATE_ALWAYS=true`). En production, lancer `php artisan l5-swagger:generate` au déploiement.
+- Le test `tests/Api/DocumentationTest.php` échoue si une route `/api/v1` n'est pas documentée.
+
+### CORS
+
+Les origines autorisées à appeler l'API depuis un navigateur sont listées dans `CORS_ALLOWED_ORIGINS`, séparées par des virgules. Les applications mobiles natives ne sont pas concernées.
+<!-- @endfeature -->
+
+<!-- @feature ui:livewire -->
+## Interface Livewire
+
+- Les composants sont dans `app/Web/Livewire` (`config/livewire.php`) et leurs vues dans `resources/views/livewire`. Le layout est `resources/views/layouts/app.blade.php`.
+- Un composant valide les champs, appelle un cas d'usage et affiche le résultat. Les erreurs du domaine (`DomainError`) sont affichées dans l'erreur `erreur` du formulaire.
+- `php artisan make:livewire NomDuComposant` crée directement le composant dans `app/Web/Livewire`.
+<!-- @endfeature -->
+
+<!-- @feature ui:inertia -->
+## Interface Inertia
+
+- Les contrôleurs sont dans `app/Web/Controllers` et les pages dans `resources/js/Pages`. `Inertia::render('Exemples/Index')` correspond à `resources/js/Pages/Exemples/Index.*`.
+- Une erreur métier ramène l'utilisateur au formulaire, avec le message dans `errors.erreur`. Les messages de succès sont partagés dans `flash.succes` (voir `HandleInertiaRequests`).
+<!-- @endfeature -->
+
+<!-- @feature data:eloquent -->
+## Données : Eloquent
+
+- Les modèles Eloquent sont un détail d'infrastructure (`app/Infrastructure/<Module>/Models`). Le repository les convertit en entités du domaine, qui seules sortent de l'infrastructure.
+- Les erreurs de base attendues (contrainte d'unicité…) sont traduites en `BusinessRuleViolation`.
+- Migrations : `database/migrations`, à lancer avec `php artisan migrate`.
+<!-- @endfeature -->
+
+<!-- @feature data:procedures -->
+## Données : procédures stockées PostgreSQL
+
+Les procédures qui retournent des données sont des **fonctions** (`RETURNS TABLE` / `SETOF`), appelées par `SELECT * FROM ma_fonction(...)`.
 
 ```php
 // Dans un repository de l'Infrastructure
-$this->sp->call('ps_transactions_liste', [$page, $parPage]);           // toutes les lignes
-$this->sp->first('ps_transaction_detail', ['p_id' => $id]);            // 1re ligne ou null (paramètres nommés)
+$this->sp->call('ps_commandes_liste', [$page, $parPage]);   // toutes les lignes
+$this->sp->first('ps_commande_detail', ['p_id' => $id]);     // 1re ligne ou null (paramètres nommés)
 ```
 
 - Paramètres positionnels (`[1, 20]`) ou nommés (`['p_id' => 1]` → `p_id => ?`).
 - Typage automatique : `bool`, `int`, `null`, chaîne.
-- Nom de fonction validé (identifiant + schéma optionnel `paiement.ps_x`) : pas d'injection possible.
-- Une erreur métier se lève côté base avec `RAISE EXCEPTION 'Solde insuffisant';` : le message (sans `ERROR:`/`CONTEXT:`) est renvoyé au front en 422.
+- Le nom de fonction est validé (identifiant + schéma optionnel, ex. `vente.ps_x`), ce qui empêche l'injection.
+- Une erreur métier se lève côté base avec `RAISE EXCEPTION 'Solde insuffisant';`. Le message, sans `ERROR:`/`CONTEXT:`, devient une `BusinessRuleViolation` affichée à l'utilisateur.
+- Des fonctions d'exemple (pour les tests) sont dans `tests/Integration/fixtures/pgsql/exemple.sql`.
+<!-- @endfeature -->
 
-### Ajouter une ressource
+## Ajouter une ressource
 
 1. `Domain/<Module>/Entities` + interface `Domain/<Module>/Repositories/<Module>Repository`
 2. `Application/<Module>/UseCases` (+ DTO)
+<!-- @feature data:eloquent -->
+3. Migration + `Infrastructure/<Module>/Models/<Module>Model` + `Infrastructure/<Module>/Repositories/Eloquent<Module>Repository`
+<!-- @endfeature -->
+<!-- @feature data:procedures -->
 3. `Infrastructure/<Module>/Repositories/StoredProcedure<Module>Repository`
+<!-- @endfeature -->
 4. Liaison dans `CleanArchitectureServiceProvider::$bindings`
-5. `Api/Requests`, `Api/Controllers/V1` avec attributs `#[OA\...]`, route dans `routes/api.php`
-6. Tests dans chaque suite (voir ci-dessous)
-
-## Installation
-
-```bash
-composer setup                # install, .env, clé
-# Configurer DB_* dans .env (PostgreSQL)
-php artisan serve             # http://localhost:8000
-```
-
-En local : PostgreSQL 17 Homebrew sur le port **5433**, rôle/mot de passe `template_app`, bases `template_app` et `template_app_test`.
-
-## Documentation Swagger
-
-- Swagger UI : <http://localhost:8000/documentation>
-- Spécification OpenAPI JSON : <http://localhost:8000/docs> (à importer côté Angular/Flutter pour générer les clients)
-- Générée depuis les attributs `#[OA\...]` de `app/Api`. En local elle se régénère à chaque visite
-  (`L5_SWAGGER_GENERATE_ALWAYS=true`) ; en production lancer `php artisan l5-swagger:generate` au déploiement.
+<!-- @feature api -->
+5. API : `Api/Requests`, `Api/Controllers/V1` avec attributs `#[OA\...]`, route dans `routes/api.php`
+<!-- @endfeature -->
+<!-- @feature ui:livewire -->
+6. Web : composant `Web/Livewire/<Module>` + vue `resources/views/livewire/…` + route dans `routes/web.php`
+<!-- @endfeature -->
+<!-- @feature ui:inertia -->
+6. Web : `Web/Requests`, `Web/Controllers`, page `resources/js/Pages/<Module>/…` + routes dans `routes/web.php`
+<!-- @endfeature -->
+7. Tests dans chaque suite (voir ci-dessous)
 
 ## Tests
 
-| Suite | Dossier | Ce qui est testé | Base |
-|---|---|---|---|
-| **Unit** | `tests/Unit` | Domaine (Montant, entités), ProcedureCallBuilder, classement des erreurs, rendu des exceptions, règles d'architecture | aucune |
-| **Application** | `tests/Application` | Cas d'usage avec un repository en mémoire | aucune |
-| **Feature** | `tests/Feature` | Scénarios fonctionnels complets (créer → consulter → lister…) | mémoire |
-| **Api** | `tests/Api` | Contrat HTTP : codes, structure JSON, en-têtes, CORS, 404/405/422/500, doc Swagger à jour | mémoire |
-| **Integration** | `tests/Integration` | Vraies fonctions PL/pgSQL (`fixtures/pgsql`) + appel HTTP de bout en bout | PostgreSQL `template_app_test` |
-
 ```bash
 php artisan test                      # tout
-composer test:unit                    # ou test:application, test:feature, test:api, test:integration
+composer test:unit                    # ou test:application, test:integration…
 ```
 
-Les tests d'intégration sont ignorés si la base `INTEGRATION_DB_*` (voir `phpunit.xml`) est injoignable.
-
-## CORS
-
-Origines autorisées dans `CORS_ALLOWED_ORIGINS` (séparées par des virgules, ex. `http://localhost:4200`).
-Les apps Flutter mobiles ne sont pas concernées par CORS (seulement Flutter Web).
+- **Unit** (`tests/Unit`) : domaine, règles d'architecture, composants techniques. Aucune base.
+- **Application** (`tests/Application`) : cas d'usage avec un repository en mémoire.
+<!-- @feature api -->
+- **Feature** (`tests/Feature`) : scénarios complets via l'API (créer → consulter → lister…), en mémoire.
+- **Api** (`tests/Api`) : contrat HTTP (codes, structure JSON, CORS, erreurs) et documentation Swagger à jour.
+<!-- @endfeature -->
+<!-- @feature ui -->
+- **Web** (`tests/Web`) : pages et formulaires de l'interface, en mémoire.
+<!-- @endfeature -->
+<!-- @feature data:eloquent -->
+- **Integration** (`tests/Integration`) : repository Eloquent et migrations sur SQLite en mémoire.
+<!-- @endfeature -->
+<!-- @feature data:procedures -->
+- **Integration** (`tests/Integration`) : vraies fonctions PL/pgSQL sur la base `INTEGRATION_DB_*` (voir `phpunit.xml`). Ces tests sont ignorés si la base est injoignable.
+<!-- @endfeature -->

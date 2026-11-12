@@ -10,7 +10,7 @@ use Tests\Support\Fakes\InMemoryExempleRepository;
 use Tests\TestCase;
 
 /**
- * Tests du contrat API consommé par Angular et Flutter :
+ * Tests du contrat de l'API :
  * codes HTTP, structure JSON, en-têtes, validation, erreurs.
  */
 class ExempleApiTest extends TestCase
@@ -133,7 +133,7 @@ class ExempleApiTest extends TestCase
 
     public function test_reponse_json_meme_sans_entete_accept(): void
     {
-        // Flutter/Dio n'envoie pas toujours Accept: application/json.
+        // Certains clients (mobile…) n'envoient pas toujours Accept: application/json.
         $this->post('/api/v1/exemples', [])
             ->assertStatus(422)
             ->assertJsonPath('success', false);
