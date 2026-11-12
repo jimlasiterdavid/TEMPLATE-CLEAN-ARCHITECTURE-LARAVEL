@@ -110,13 +110,19 @@ cd "$TARGET"
 php bin/init.php "$NAME" ${INIT_ARGS[@]+"${INIT_ARGS[@]}"}
 
 if [ $GIT -eq 1 ]; then
-  git init --quiet -b main 2>/dev/null || git init --quiet
+  git init --quiet
+  git symbolic-ref HEAD refs/heads/main
   git add -A
-  git commit --quiet -m "Initialisation du projet $NAME" || true
-  green "✔ Dépôt git initialisé"
+  if git commit --quiet -m "Initialisation du projet $NAME"; then
+    green "✔ Dépôt git initialisé (branche main)"
+  else
+    printf '\033[33m! Premier commit impossible : configurez git user.name / user.email puis lancez « git commit -m Initialisation ».\033[0m\n'
+  fi
 fi
 
 echo
 green "✔ Projet créé : $TARGET"
 echo "  cd $TARGET"
 echo "  php artisan serve"
+echo
+echo "  Ensuite : créer les branches dev et staging et mettre dev par défaut (voir README, section Branches)."

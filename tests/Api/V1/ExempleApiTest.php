@@ -108,7 +108,7 @@ class ExempleApiTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
-    public function test_erreur_metier_procedure_422(): void
+    public function test_erreur_metier_du_stockage_422(): void
     {
         $repo = Mockery::mock(ExempleRepository::class);
         $repo->shouldReceive('creer')->andThrow(new BusinessRuleViolation('Ce libellé existe déjà.'));
