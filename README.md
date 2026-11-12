@@ -2,7 +2,7 @@
 
 Application Laravel en **clean architecture**.
 
-Auteur : {{AUTHOR}}
+Auteur : Zamble Bi Tah David
 
 <!-- template:start -->
 ## Template clean architecture Laravel

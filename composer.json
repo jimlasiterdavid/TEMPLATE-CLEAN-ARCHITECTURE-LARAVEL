@@ -105,5 +105,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Zamble Bi Tah David"
+        }
+    ]
 }

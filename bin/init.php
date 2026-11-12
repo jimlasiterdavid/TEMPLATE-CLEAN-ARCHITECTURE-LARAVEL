@@ -253,7 +253,8 @@ foreach (projectFiles($root, $excluded) as $file) {
 
     if (basename($file) === 'README.md') {
         $new = preg_replace('/<!-- template:start -->.*?<!-- template:end -->\n*/s', '', $new);
-        $new = str_replace('{{AUTHOR}}', $author !== '' ? $author : 'à compléter', $new);
+        // Ligne « Auteur : … » du template → auteur du nouveau projet.
+        $new = preg_replace('/^Auteur : .*$/m', 'Auteur : '.($author !== '' ? $author : 'à compléter'), $new, 1);
     }
 
     $new = strtr($new, $replacements);
