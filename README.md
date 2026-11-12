@@ -213,7 +213,7 @@ Les origines autorisées à appeler l'API depuis un navigateur sont listées dan
 <!-- @feature ui:inertia -->
 ## Interface Inertia
 
-- Les contrôleurs sont dans `app/Web/Controllers` et les pages dans `resources/js/Pages`. `Inertia::render('Exemples/Index')` correspond à `resources/js/Pages/Exemples/Index.*`.
+- Les contrôleurs sont dans `app/Web/Controllers` et les pages dans `resources/js/pages`. `Inertia::render('Exemples/Index')` correspond à `resources/js/pages/Exemples/Index.*`.
 - Une erreur métier ramène l'utilisateur au formulaire, avec le message dans `errors.erreur`. Les messages de succès sont partagés dans `flash.succes` (voir `HandleInertiaRequests`).
 <!-- @endfeature -->
 
@@ -261,7 +261,7 @@ $this->sp->first('ps_commande_detail', ['p_id' => $id]);     // 1re ligne ou nul
 6. Web : composant `Web/Livewire/<Module>` + vue `resources/views/livewire/…` + route dans `routes/web.php`
 <!-- @endfeature -->
 <!-- @feature ui:inertia -->
-6. Web : `Web/Requests`, `Web/Controllers`, page `resources/js/Pages/<Module>/…` + routes dans `routes/web.php`
+6. Web : `Web/Requests`, `Web/Controllers`, page `resources/js/pages/<Module>/…` + routes dans `routes/web.php`
 <!-- @endfeature -->
 7. Tests dans chaque suite (voir ci-dessous)
 
